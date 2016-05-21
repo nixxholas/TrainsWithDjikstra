@@ -10,7 +10,6 @@ package DataLoader;
  * @author Nixholas
  */
 public class Station{
-    
     private String LineDesc     = ""; //Data for Station Name
     private String LineCde      = ""; //Data for Station Code
     private float xAxis         = 0;
@@ -71,20 +70,4 @@ public class Station{
         this.yAxis = y;
     }
     
-    /**
-     * Calculates the distance between one coordinate from another.
-     * 
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @return 
-     */
-    
-    public float getDistance(float x1, float y1, float x2, float y2) {
-            float dist = (float) Math.sqrt(
-            Math.pow(x1 - x2, 2) +
-            Math.pow(y1 - y2, 2) );
-            return dist;
-    }
 }

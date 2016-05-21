@@ -9,9 +9,9 @@ public class Edge {
 
     /**
      * Default Edge Constructor
-     * 
+     *
      * @param argTarget
-     * @param argWeight 
+     * @param argWeight
      */
     public Edge(Vertex argTarget, double argWeight) {
         target = argTarget;
@@ -20,17 +20,21 @@ public class Edge {
         xAxis = 0;
     }
     
+    public Vertex getTarget() {
+        return target;
+    }
+
     /**
      * Edge Constructor
-     * 
-     * Based on Dijkstra's algorithm, the edge object has the weight
-     * variable. However, this is not useful for the Train System
-     * Application at all and will be deemed deprecated.
-     * 
+     *
+     * Based on Dijkstra's algorithm, the edge object has the weight variable.
+     * However, this is not useful for the Train System Application at all and
+     * will be deemed deprecated.
+     *
      * @param argTarget
      * @param xAxis
-     * @param yAxis 
-     */    
+     * @param yAxis
+     */
     public Edge(Vertex argTarget, float xAxis, float yAxis) {
         target = argTarget;
         this.xAxis = xAxis;

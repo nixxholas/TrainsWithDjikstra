@@ -67,14 +67,7 @@ public class ReadXMLFile {
                             s.setxAxis(stn.getxAxis());
                             s.setyAxis(stn.getyAxis());
                         } else {
-                            // If I can add an element in stnChecker, Create a new entry in stations
-//                            try {
-//                                if (stnChecker.add(Name)) {
-//                                    stations.put(Name, new Station(Name, xAxis, yAxis));
-//                                }
-//                            } catch (Exception ex) {
-//
-//                            }
+                            // Do nothing
                         }
                     }
                 }

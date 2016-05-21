@@ -3,14 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+/**
+ * What is left:
+ * 
+ * I need to enhance the routing once again,
+ * something is wrong somewhere with the edges and thus I'm unable to achieve
+ * the shortest routes
+ * 
+ * Create the printouts for the station by station instructions for commuting
+ */
+
 package MRT;
 
 import static DataLoader.DataLoader.*;
 import DataLoader.Station;
 import static MRT.SearchMode.searchSaved;
+import de.vogella.algorithms.dijkstra.model.Vertex;
+import static de.vogella.algorithms.dijkstra.model.Vertex.computePaths;
+import static de.vogella.algorithms.dijkstra.model.Vertex.getShortestPathTo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +34,7 @@ import java.util.logging.Logger;
  * @author Nixholas
  */
 public class MainFrame extends javax.swing.JFrame {
-
+    String Start, Destination = null;
     public static MainFrame saved;
 
     /**
@@ -40,22 +55,10 @@ public class MainFrame extends javax.swing.JFrame {
                     resetDBox();
                 }
                 // Removes the selected station at the StartBox
+                try {
                 DestBox.removeItemAt(StartBox.getSelectedIndex());
-            }
-        });
-
-        DestBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                /**
-                 * Assign both Start and Destination to Strings
-                 */
-                if (DestBox.getSelectedItem() == null) {
-                    // Do nothing if DestBox is not selected.
-                } else {
-                    String Start = StartBox.getSelectedItem().toString();
-                    String Destination = DestBox.getSelectedItem().toString();
-                    // Invoke a method to compute the distance/travel
-                    computeTravel(Start, Destination);
+                } catch (Exception ex) {
+                    
                 }
             }
         });
@@ -70,21 +73,30 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        StartBox = new javax.swing.JComboBox<>();
-        DestBox = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        StartBox = new javax.swing.JComboBox<String>();
+        DestBox = new javax.swing.JComboBox<String>();
+        searchMode = new javax.swing.JButton();
+        computeBtn = new javax.swing.JButton();
+        txtBox = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        StartBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        StartBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        DestBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        DestBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         DestBox.setToolTipText("");
 
-        jButton1.setText("Search Mode");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        searchMode.setText("Search Mode");
+        searchMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                searchModeActionPerformed(evt);
+            }
+        });
+
+        computeBtn.setText("Compute");
+        computeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                computeBtnActionPerformed(evt);
             }
         });
 
@@ -94,34 +106,61 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(StartBox, 0, 365, Short.MAX_VALUE)
-                    .addComponent(DestBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(70, 70, 70)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtBox, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 611, Short.MAX_VALUE)
+                                .addComponent(searchMode, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(31, 31, 31))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(StartBox, 0, 365, Short.MAX_VALUE)
+                            .addComponent(DestBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(26, 26, 26)
+                        .addComponent(computeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(49, 49, 49)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(StartBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(37, 37, 37)
-                        .addComponent(DestBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(462, Short.MAX_VALUE))
+                        .addComponent(DestBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(computeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23)
+                .addComponent(txtBox, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(searchMode, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void searchModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchModeActionPerformed
         saved = this;
         this.setVisible(false);
         searchSaved.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_searchModeActionPerformed
+
+    private void computeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computeBtnActionPerformed
+        try {
+            Start = StartBox.getSelectedItem().toString();
+            Destination = DestBox.getSelectedItem().toString();
+            // Invoke a method to compute the distance/travel
+            computeTravel(Start, Destination);
+            Start = null;
+            Destination = null;
+            configureMF();
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_computeBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -186,28 +225,47 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    public String computeTravel(String Start, String Dest) {
+    public static String computeTravel(String Start, String Dest) {
         /**
          * Compute the number of stations from start to the destination OR To
          * the interchange
          */
+        Vertex start = null;
+        Vertex dest = null;
+        boolean startSet = false;
+        boolean endSet = false;
+        for (Vertex v : bigArray) {
+            if (v.stnName.equalsIgnoreCase(Start) || v.stnCode.equalsIgnoreCase(Start)) {
+                start = v;
+                startSet = true;
+            } else if (v.stnName.equalsIgnoreCase(Dest) || v.stnCode.equalsIgnoreCase(Dest)) {
+                dest = v;
+                endSet = true;
+            }
 
-        textFieldLoop();
+            if (startSet == true && endSet == true) {
+                computePaths(start); // run Dijkstra
+                System.out.println("Distance to " + dest + ": " + dest.minDistance);
+                List<Vertex> path = getShortestPathTo(dest);
+                System.out.println("Path: " + path);
+            }
+        }
+
         return null;
     }
 
     public void textFieldLoop() {
-        
-        
+
 //        TextField.setText(null);
 //        TextField.setText("Current Station: " + StartBox.getSelectedItem().toString() + "\n" + 
 //                "Destination Station: " + DestBox.getSelectedItem().toString());
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> DestBox;
     private javax.swing.JComboBox<String> StartBox;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton computeBtn;
+    private javax.swing.JButton searchMode;
+    private javax.swing.JTextField txtBox;
     // End of variables declaration//GEN-END:variables
 }

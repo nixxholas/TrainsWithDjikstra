@@ -5,22 +5,33 @@ import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
 
-    public final String name;
+    public String stnCode;
+    public String stnName;
+    public float xAxis;
+    public float yAxis;
     public ArrayList<Edge> adjacencies;
     public double minDistance = Double.POSITIVE_INFINITY;
     public Vertex previous;
 
-    public Vertex(String argName) {
-        name = argName;
+    public Vertex(String argName, String stnName) {
+        stnCode = argName;
+        this.stnName = stnName;
+    }
+    
+    public Vertex(String argName, String stnName, float xAxis, float yAxis) {
+        stnCode = argName;
+        this.stnName = stnName;
+        this.xAxis = xAxis;
+        this.yAxis = yAxis;
     }
 
     public String toString() {
-        return name;
+        return stnCode;
     }
 
-    public float compareTo(Vertex other) {
+    public int compareTo(Vertex other) {
         return Double.compare(minDistance, other.minDistance);
     }
     
@@ -36,7 +47,7 @@ public class Vertex {
     }
     
     public static void computePaths(Vertex source) {
-        source.minDistance = 0.;
+        source.minDistance = 0;
         PriorityQueue<Vertex> vertexQueue = new PriorityQueue<Vertex>();
         vertexQueue.add(source);
 
@@ -59,20 +70,4 @@ public class Vertex {
         }
     }
 
-        /**
-     * Calculates the distance between one coordinate from another.
-     * 
-     * @param x1
-     * @param y1
-     * @param x2
-     * @param y2
-     * @return 
-     */
-    
-    public float getDistance(float x1, float y1, float x2, float y2) {
-            float dist = (float) Math.sqrt(
-            Math.pow(x1 - x2, 2) +
-            Math.pow(y1 - y2, 2) );
-            return dist;
-    }
 }
