@@ -3,17 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  * What is left:
- * 
- * I need to enhance the routing once again,
- * something is wrong somewhere with the edges and thus I'm unable to achieve
- * the shortest routes
- * 
+ *
+ * I need to enhance the routing once again, something is wrong somewhere with
+ * the edges and thus I'm unable to achieve the shortest routes
+ *
  * Create the printouts for the station by station instructions for commuting
  */
-
 package MRT;
 
 import static DataLoader.DataLoader.*;
@@ -34,6 +31,16 @@ import java.util.logging.Logger;
  * @author Nixholas
  */
 public class MainFrame extends javax.swing.JFrame {
+    /**
+     * Objects and variables for the computePath Method.
+     */
+    List<Vertex> path = null;
+    Vertex start = null;
+    Vertex dest = null;
+    boolean startSet = false;
+    boolean endSet = false;
+    // End of the declarations for computePath
+
     String Start, Destination = null;
     public static MainFrame saved;
 
@@ -56,9 +63,9 @@ public class MainFrame extends javax.swing.JFrame {
                 }
                 // Removes the selected station at the StartBox
                 try {
-                DestBox.removeItemAt(StartBox.getSelectedIndex());
+                    DestBox.removeItemAt(StartBox.getSelectedIndex());
                 } catch (Exception ex) {
-                    
+
                 }
             }
         });
@@ -225,15 +232,11 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    public static String computeTravel(String Start, String Dest) {
+    public String computeTravel(String Start, String Dest) {
         /**
          * Compute the number of stations from start to the destination OR To
          * the interchange
          */
-        Vertex start = null;
-        Vertex dest = null;
-        boolean startSet = false;
-        boolean endSet = false;
         for (Vertex v : bigArray) {
             if (v.stnName.equalsIgnoreCase(Start) || v.stnCode.equalsIgnoreCase(Start)) {
                 start = v;
@@ -245,20 +248,16 @@ public class MainFrame extends javax.swing.JFrame {
 
             if (startSet == true && endSet == true) {
                 computePaths(start); // run Dijkstra
-                System.out.println("Distance to " + dest + ": " + dest.minDistance);
-                List<Vertex> path = getShortestPathTo(dest);
-                System.out.println("Path: " + path);
+                path = getShortestPathTo(dest);
             }
         }
-
+        textFieldLoop(path, dest);
         return null;
     }
 
-    public void textFieldLoop() {
-
-//        TextField.setText(null);
-//        TextField.setText("Current Station: " + StartBox.getSelectedItem().toString() + "\n" + 
-//                "Destination Station: " + DestBox.getSelectedItem().toString());
+    public void textFieldLoop(List<Vertex> path, Vertex dest) {
+        System.out.println("Distance to " + dest + ": " + dest.minDistance);
+        System.out.println("Path: " + path);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

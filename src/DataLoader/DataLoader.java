@@ -158,24 +158,21 @@ public class DataLoader {
      *
      * Take in array that has vertexes of the station
      *
-     * Everytime you find a replica, then do some fuck
+     * Everytime you find a replica, then do something
      *
      * @param imported
      */
     public static void edgeLinker(ArrayList<Vertex> imported) {
-        ArrayList<String> TrainSystem = new ArrayList<String>();
-        for (Vertex s : imported) {
-            TrainSystem.add(s.stnCode);
-        }
         /**
          * For each Station in Train System, initialize another for each loop
          * for each vertex in the train system, set it's edges to it's next and
          * previous station if they both exist. Else, set the next station or
          * the previous station.
          */
+        Vertex prevStn = null;
         int counter = 0;
         double distance = 10;
-        Vertex prevStn = null;
+        //Vertex prevStn = null;
         for (Vertex curVertex : imported) {
             if (counter == imported.size()) {
                 break;
@@ -186,11 +183,17 @@ public class DataLoader {
             }
             if (counter >= 0 && prevStn != null && counter < imported.size()) {
                 curVertex.adjacencies = new ArrayList<Edge>();
-                curVertex.adjacencies.add(new Edge(prevStn, getDistance(curVertex.xAxis, curVertex.yAxis, prevStn.xAxis, prevStn.yAxis)));
-                curVertex.adjacencies.add(new Edge(nextVertex, getDistance(curVertex.xAxis, curVertex.yAxis, nextVertex.xAxis, nextVertex.yAxis)));
+                curVertex.adjacencies.add(new Edge(prevStn, 
+                       // getDistance(curVertex.xAxis, curVertex.yAxis, prevStn.xAxis, prevStn.yAxis)
+                2));
+                curVertex.adjacencies.add(new Edge(nextVertex, 
+                //        getDistance(curVertex.xAxis, curVertex.yAxis, nextVertex.xAxis, nextVertex.yAxis)
+                2));
             } else {
                 curVertex.adjacencies = new ArrayList<Edge>();
-                curVertex.adjacencies.add(new Edge(nextVertex, getDistance(curVertex.xAxis, curVertex.yAxis, nextVertex.xAxis, nextVertex.yAxis)));
+                curVertex.adjacencies.add(new Edge(nextVertex, 
+                 //       getDistance(curVertex.xAxis, curVertex.yAxis, nextVertex.xAxis, nextVertex.yAxis)
+                2));
             }
             prevStn = curVertex;
             counter++;
@@ -198,6 +201,42 @@ public class DataLoader {
         //Resets the counter
         counter = 0;
     }
+    
+    /**
+     * Old and deprecated edgeLinker
+     */
+//            Vertex prevStn = null, curStn = null;
+//        for (Vertex station : imported) {
+//            if (prevStn != null) {
+//                // Time to link with the previous station first
+//                station.adjacencies.add(new Edge(prevStn, getDistance(station.xAxis, station.yAxis, prevStn.xAxis, prevStn.yAxis)));
+//                station.adjacencies.add(new Edge(prevStn, getDistance(station.xAxis, station.yAxis, prevStn.xAxis, prevStn.yAxis)));
+//                //prevStn.adjacencies.add(new Edge(curStn, getDistance(prevStn.xAxis, prevStn.yAxis, nextStn.xAxis, nextStn.yAxis)));
+//                //} else if (prevStn == null && nextStn != null) {
+//                // Since if the current station only has a next station, we'll link with that only
+//                //curStn.adjacencies.add(new Edge(nextStn, getDistance(curStn.xAxis, curStn.yAxis, nextStn.xAxis, nextStn.yAxis)));
+//                //nextStn.adjacencies.add(new Edge(curStn, getDistance(nextStn.xAxis, nextStn.yAxis, curStn.xAxis, curStn.yAxis)));
+//            } else {
+//                // This means that there isn't a next station
+//                //prevStn.adjacencies.add(new Edge(curStn, getDistance(prevStn.xAxis, prevStn.yAxis, nextStn.xAxis, nextStn.yAxis)));
+//            }
+//            prevStn = station; // Set the current Station as the previous
+//            curStn = station; // Spam the set till the end
+//        }
+//
+//        Collections.reverse(imported);
+//
+//        // Since the current station is the end of one station
+//        for (Vertex nextStn : imported) {
+//            if (curStn == nextStn) {
+//
+//            } else {
+//                // Link up with the second station
+//                curStn.adjacencies.add(new Edge(nextStn, getDistance(curStn.xAxis, curStn.yAxis, nextStn.xAxis, nextStn.yAxis)));
+//                nextStn.adjacencies.add(new Edge(curStn, getDistance(nextStn.xAxis, nextStn.yAxis, curStn.xAxis, curStn.yAxis)));
+//            }
+//        }
+    
 
     public static void interchangeLinker(ArrayList<Station> imported) {
         /**
@@ -224,9 +263,14 @@ public class DataLoader {
             for (int i = 0; i < bigArray.size(); i++) {
                 if (v.stnName.equals(bigArray.get(i).stnName)
                         && !v.stnCode.equals(bigArray.get(i).stnCode)) {
-                    System.out.println(v.stnCode + "   " + bigArray.get(i).stnCode);
-                    bigArray.get(i).adjacencies.add(new Edge(bigArray.get(bigArray.indexOf(v)), 0));
-                    bigArray.get(bigArray.indexOf(v)).adjacencies.add(new Edge(bigArray.get(i), 0));
+                    bigArray.get(i).adjacencies.add(new Edge(bigArray.get(bigArray.indexOf(v)),
+                            0));
+                    // We don't need to compute the distance because they are stations.
+                    // Just setting it to 0 will do
+                    //getDistance(bigArray.get(bigArray.indexOf(v)).xAxis, bigArray.get(bigArray.indexOf(v)).yAxis, bigArray.get(i).xAxis, bigArray.get(i).yAxis)));
+                    bigArray.get(bigArray.indexOf(v)).adjacencies.add(new Edge(bigArray.get(i),
+                            0));
+                    //getDistance(bigArray.get(i).xAxis, bigArray.get(i).yAxis, bigArray.get(bigArray.indexOf(v)).xAxis, bigArray.get(bigArray.indexOf(v)).yAxis)));
                 }
             }
 //            int searchListLength = bigArray.size();
@@ -287,23 +331,21 @@ public class DataLoader {
         }
         return null;
     }
-    
-    
+
     /**
      * Calculates the distance between one coordinate from another.
-     * 
+     *
      * @param x1
      * @param y1
      * @param x2
      * @param y2
-     * @return 
+     * @return
      */
-    
     public static double getDistance(float x1, float y1, float x2, float y2) {
-            float dist = (float) Math.sqrt(
-            Math.pow(x1 - x2, 2) +
-            Math.pow(y1 - y2, 2) );
-            return dist;
+        float dist = (float) Math.sqrt(
+                Math.pow(x1 - x2, 2)
+                + Math.pow(y1 - y2, 2));
+        return dist;
     }
 
 }

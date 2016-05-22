@@ -5,8 +5,12 @@
  */
 package MRT;
 
-import static MRT.MainFrame.computeTravel;
+import static DataLoader.DataLoader.bigArray;
 import static MRT.MainFrame.saved;
+import de.vogella.algorithms.dijkstra.model.Vertex;
+import static de.vogella.algorithms.dijkstra.model.Vertex.computePaths;
+import static de.vogella.algorithms.dijkstra.model.Vertex.getShortestPathTo;
+import java.util.List;
 
 
 
@@ -15,6 +19,16 @@ import static MRT.MainFrame.saved;
  * @author Nixholas
  */
 public class SearchMode extends javax.swing.JFrame {
+    /**
+     * Objects and variables for the computePath Method.
+     */
+    List<Vertex> path = null;
+    Vertex start = null;
+    Vertex dest = null;
+    boolean startSet = false;
+    boolean endSet = false;
+    // End of the declarations for computePath
+    
     String Start, Destination;
     public static SearchMode searchSaved = new SearchMode();
     
@@ -134,6 +148,34 @@ public class SearchMode extends javax.swing.JFrame {
         Destination = null;
         searchStart.setText("");
         searchDest.setText("");
+    }
+    
+    public String computeTravel(String Start, String Dest) {
+        /**
+         * Compute the number of stations from start to the destination OR To
+         * the interchange
+         */
+        for (Vertex v : bigArray) {
+            if (v.stnName.equalsIgnoreCase(Start) || v.stnCode.equalsIgnoreCase(Start)) {
+                start = v;
+                startSet = true;
+            } else if (v.stnName.equalsIgnoreCase(Dest) || v.stnCode.equalsIgnoreCase(Dest)) {
+                dest = v;
+                endSet = true;
+            }
+
+            if (startSet == true && endSet == true) {
+                computePaths(start); // run Dijkstra
+                path = getShortestPathTo(dest);
+            }
+        }
+        textFieldLoop(path, dest);
+        return null;
+    }
+
+    public void textFieldLoop(List<Vertex> path, Vertex dest) {
+        System.out.println("Distance to " + dest + ": " + dest.minDistance);
+        System.out.println("Path: " + path);
     }
     
     /**
